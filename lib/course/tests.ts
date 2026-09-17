@@ -1,0 +1,425 @@
+import type { PracticeTest, Question } from "./types";
+const tf = (
+  id: string,
+  prompt: string,
+  answer: string,
+  explanation: string,
+  evidence: string,
+): Question => ({
+  id,
+  type: "tfng",
+  prompt,
+  options: ["True", "False", "Not Given"],
+  answer: [answer],
+  explanation,
+  evidence,
+});
+const choice = (
+  id: string,
+  prompt: string,
+  options: string[],
+  answer: string,
+  explanation: string,
+  evidence: string,
+): Question => ({
+  id,
+  type: "choice",
+  prompt,
+  options,
+  answer: [answer],
+  explanation,
+  evidence,
+});
+const gap = (
+  id: string,
+  prompt: string,
+  answer: string[],
+  explanation: string,
+  evidence: string,
+  maxWords = 2,
+): Question => ({
+  id,
+  type: "gap",
+  prompt,
+  answer,
+  explanation,
+  evidence,
+  maxWords,
+});
+export const practiceTests: PracticeTest[] = [
+  {
+    id: "reading-green-campus",
+    version: 1,
+    skill: "reading",
+    title: "A greener campus",
+    subtitle: "Городская среда · факты и выводы",
+    minutes: 12,
+    topic: "Природа и общество",
+    instructions:
+      "Прочитайте текст и ответьте на 8 вопросов. Для True / False / Not Given: True — утверждение подтверждается; False — текст ему противоречит; Not Given — информации недостаточно. В пропусках используйте не более двух слов из текста.",
+    passage: [
+      "A. When Westbridge University announced that it would replace part of its central car park with a garden, the proposal attracted both enthusiasm and concern. Supporters hoped the space would offer students somewhere to relax between classes. Several staff members, however, worried about losing convenient parking. Rather than approving a permanent redesign immediately, the university introduced a six-month pilot on one third of the car park. The remaining spaces stayed open throughout the trial.",
+      "B. The garden was designed by a small team of students working with a local landscape specialist. They chose native plants because these generally needed less watering once established. Rainwater was collected from the roof of a nearby building and stored in two tanks. Although the original proposal included a pond, this feature was removed from the final plan because maintaining it would have exceeded the available budget. Benches and movable tables were installed instead.",
+      "C. To evaluate the pilot, researchers counted visitors at set times and interviewed people who used the area. Most visitors came at lunchtime, and many stayed for less than twenty minutes. The interviews suggested that users valued the opportunity to take a short break outdoors. However, the researchers did not measure changes in examination results or compare users with a control group. They therefore warned against claiming that the garden had improved academic performance.",
+      "D. The trial also revealed practical problems. On rainy days, the narrow path became slippery, and wheelchair users reported difficulty reaching some of the tables. The team responded by replacing the surface and widening the main entrance. Some people suggested keeping the garden open after dark, but this idea was postponed while the university considered the cost of lighting. During the pilot, the space continued to close at sunset.",
+      "E. At the end of the six months, the university decided to retain the garden at its existing size. The decision was based on regular use of the space and positive feedback, rather than evidence of financial savings. There were no immediate plans to remove more parking spaces. A transport survey was commissioned to understand how people travelled to campus before any further changes were considered. For the project team, the main lesson was that a modest experiment could reveal issues that an attractive drawing alone would not show.",
+    ],
+    questions: [
+      tf(
+        "r1",
+        "The pilot garden occupied the entire central car park.",
+        "False",
+        "В A указана только треть парковки; остальные места оставались открыты.",
+        "a six-month pilot on one third of the car park",
+      ),
+      tf(
+        "r2",
+        "The garden improved students’ examination results.",
+        "Not Given",
+        "В C результаты экзаменов не измеряли. Это отсутствие данных, а не доказательство ухудшения или отсутствия эффекта.",
+        "the researchers did not measure changes in examination results",
+      ),
+      tf(
+        "r3",
+        "The university kept the garden at its original pilot size.",
+        "True",
+        "В E прямо сказано, что существующий размер сохранили.",
+        "retain the garden at its existing size",
+      ),
+      choice(
+        "r4",
+        "Why was the pond removed from the plan?",
+        [
+          "It would have been too expensive to maintain.",
+          "Students preferred a sports area.",
+          "There was not enough rainwater.",
+        ],
+        "It would have been too expensive to maintain.",
+        "Причина — расходы на обслуживание, а не недостаток воды.",
+        "maintaining it would have exceeded the available budget",
+      ),
+      gap(
+        "r5",
+        "Water for the plants was collected from a nearby building’s ___.",
+        ["roof"],
+        "В B указан источник дождевой воды — крыша.",
+        "Rainwater was collected from the roof of a nearby building",
+      ),
+      gap(
+        "r6",
+        "During the pilot, the garden closed at ___.",
+        ["sunset"],
+        "Идею ночного открытия отложили; действующее время закрытия — закат.",
+        "the space continued to close at sunset",
+        1,
+      ),
+      {
+        id: "r7",
+        type: "heading",
+        prompt: "Choose the best heading for paragraph D.",
+        options: [
+          "Responding to access and safety issues",
+          "Measuring academic success",
+          "Finding a new source of funding",
+        ],
+        answer: ["Responding to access and safety issues"],
+        explanation:
+          "Весь абзац посвящён скользкой дорожке, доступности и освещению.",
+        evidence:
+          "the narrow path became slippery, and wheelchair users reported difficulty",
+      },
+      choice(
+        "r8",
+        "What is the main lesson identified by the project team?",
+        [
+          "Small trials can expose practical difficulties.",
+          "Gardens always save universities money.",
+          "Car parks should be removed without consultation.",
+        ],
+        "Small trials can expose practical difficulties.",
+        "Финальная мысль — пилот выявляет то, чего не видно на плане.",
+        "a modest experiment could reveal issues that an attractive drawing alone would not show",
+      ),
+    ],
+  },
+  {
+    id: "reading-digital-notes",
+    version: 1,
+    skill: "reading",
+    title: "The way we take notes",
+    subtitle: "Образование · сравнение исследований",
+    minutes: 12,
+    topic: "Образование и технологии",
+    instructions:
+      "Ответьте на 8 вопросов по тексту. Не добавляйте собственные знания: оценивайте только приведённую информацию. Для пропусков — не более двух слов из текста.",
+    passage: [
+      "A. When students decide how to take notes, the choice often appears to be between a laptop and a notebook. Yet a recent classroom project at Northfield College suggests that this question may be too simple. The project was not designed to prove that one device was universally superior. Instead, tutors wanted to explore whether the instructions students received could influence the usefulness of their notes.",
+      "B. Sixty volunteers from an introductory history course took part. All attended the same recorded lecture, which lasted twenty-five minutes. Half used laptops and half wrote by hand. Within each group, some students were told to record as much information as possible, while others were asked to select the main ideas and explain them in their own words. Internet access was disabled on all laptops during the session, so online distractions were not part of the comparison.",
+      "C. Students who were asked to record as much as possible generally produced longer notes, especially when typing. However, length alone did not predict performance on questions that required an explanation of the lecture’s arguments. Students instructed to summarise tended to do better on these questions, whether they used a laptop or paper. On questions about isolated dates and names, the differences between the groups were small.",
+      "D. A week later, participants were allowed ten minutes to review their notes before another short test. Several students reported that headings and short summaries helped them locate important points. Others found that detailed notes were useful only when they could understand why a fact had been included. The researchers did not collect information about the students’ usual note-taking habits, so they could not tell whether familiarity with a particular method affected the results.",
+      "E. The tutors were careful about interpreting the findings. Participants had volunteered, and all came from a single subject area. The project therefore could not establish what would happen in a mathematics class or during a lecture in a second language. Nor did it measure long-term learning beyond the one-week follow-up. The results offered a reason to teach note-taking strategies, rather than a reason to ban laptops.",
+      "F. Following the project, the college introduced a short workshop. Students practised identifying an argument, adding a useful heading and separating an example from a main point. They were free to choose their preferred device. The workshop’s central message was that writing down information is only the beginning: deciding what matters, and making the relationships between ideas visible, are also part of learning.",
+    ],
+    questions: [
+      tf(
+        "n1",
+        "Students using laptops could browse the internet during the lecture.",
+        "False",
+        "В B интернет на всех ноутбуках отключили.",
+        "Internet access was disabled on all laptops",
+      ),
+      tf(
+        "n2",
+        "The volunteers came from several different academic subjects.",
+        "False",
+        "Все были с одного вводного курса истории.",
+        "Sixty volunteers from an introductory history course",
+      ),
+      tf(
+        "n3",
+        "Most participants usually took notes by hand.",
+        "Not Given",
+        "Обычные привычки участников не выясняли.",
+        "did not collect information about the students’ usual note-taking habits",
+      ),
+      choice(
+        "n4",
+        "What was associated with better answers about the lecturer’s arguments?",
+        [
+          "Summarising the main ideas",
+          "Producing the longest possible notes",
+          "Using a particular laptop model",
+        ],
+        "Summarising the main ideas",
+        "Лучше отвечали те, кого просили обобщать, независимо от устройства.",
+        "Students instructed to summarise tended to do better",
+      ),
+      gap(
+        "n5",
+        "Before the second test, participants had ___ to review their notes.",
+        ["ten minutes", "10 minutes"],
+        "В D указан период повторения перед вторым тестом.",
+        "participants were allowed ten minutes to review their notes",
+      ),
+      gap(
+        "n6",
+        "The follow-up test took place a ___ after the lecture.",
+        ["week"],
+        "Второй тест был через неделю.",
+        "A week later",
+        1,
+      ),
+      {
+        id: "n7",
+        type: "heading",
+        prompt: "Choose the best heading for paragraph E.",
+        options: [
+          "Recognising the limits of the evidence",
+          "Why the college banned digital devices",
+          "A comparison of three academic subjects",
+        ],
+        answer: ["Recognising the limits of the evidence"],
+        explanation:
+          "Абзац перечисляет ограничения выборки, предмета и длительности наблюдения.",
+        evidence:
+          "all came from a single subject area ... Nor did it measure long-term learning",
+      },
+      choice(
+        "n8",
+        "What does the new workshop encourage students to do?",
+        [
+          "Make connections between ideas clear",
+          "Copy every word spoken by a lecturer",
+          "Replace all digital notes with handwritten ones",
+        ],
+        "Make connections between ideas clear",
+        "Основной посыл — выбирать важное и показывать связи.",
+        "making the relationships between ideas visible",
+      ),
+    ],
+  },
+  {
+    id: "listening-library",
+    version: 1,
+    skill: "listening",
+    title: "Welcome to the learning centre",
+    subtitle: "Объявление · детали и исправления",
+    minutes: 8,
+    topic: "Жизнь в университете",
+    instructions:
+      "Сначала прочитайте вопросы. Прослушайте объявление и заполните ответы. В пропусках — не более двух слов и/или число. В учебном режиме запись можно повторять; транскрипт появится после проверки.",
+    passage: [],
+    audio: "/audio/learning-centre.m4a",
+    transcript: `Good morning, and welcome to the university learning centre. My name is Helen, and I will explain a few changes to our services this term. If you visited us last year, please listen carefully, because some of the information on the old leaflets is no longer correct.
+First, opening hours. From Monday to Friday, the centre now opens at eight thirty, rather than nine. We close at eight in the evening. On Saturdays, we open at ten, but please note that the building is closed on Sundays. You can still access the online collection at any time.
+If you want to work with other students, you can book a group study room. These rooms used to be available for three hours, but the maximum booking is now two hours. We made this change because demand has increased. To book a room, use the online calendar. You do not need to speak to staff at the desk. However, everyone in your group must bring a student card.
+We are also offering a new workshop on using academic sources. It was originally advertised for Tuesday, but it will actually take place on Thursday. The start time is unchanged: two in the afternoon. The workshop will be held in room sixteen, on the first floor. Places are free, but you need to register because the room only holds twenty people.
+Finally, a word about equipment. You can borrow a laptop for use inside the building. Headphones are available too, although we recommend bringing your own if you have them. If a laptop develops a problem, please return it to the service desk. Do not try to repair it yourself or leave it on a table. A member of staff will arrange a replacement.
+That is all for now. After this introduction, you are welcome to look around. The quiet reading area is upstairs, while the café is next to the main entrance. Thank you for listening.`,
+    questions: [
+      gap(
+        "l1",
+        "On weekdays, the centre opens at ___.",
+        ["8:30", "8.30", "eight thirty", "08:30", "8:30 am"],
+        "Старое время nine исправлено на eight thirty.",
+        "the centre now opens at eight thirty, rather than nine",
+      ),
+      choice(
+        "l2",
+        "On which day is the building closed?",
+        ["Saturday", "Sunday", "Monday"],
+        "Sunday",
+        "В субботу открывают в десять, воскресенье — выходной.",
+        "the building is closed on Sundays",
+      ),
+      gap(
+        "l3",
+        "The maximum group room booking is now ___.",
+        ["two hours", "2 hours"],
+        "Three hours — старый лимит; действующий — two hours.",
+        "the maximum booking is now two hours",
+      ),
+      gap(
+        "l4",
+        "To reserve a room, use the ___.",
+        ["online calendar"],
+        "Бронирование через календарь, не через сотрудника.",
+        "use the online calendar",
+      ),
+      gap(
+        "l5",
+        "Every group member must bring a ___.",
+        ["student card"],
+        "У каждого должна быть студенческая карта.",
+        "everyone in your group must bring a student card",
+      ),
+      choice(
+        "l6",
+        "When will the academic sources workshop take place?",
+        ["Tuesday", "Thursday", "Saturday"],
+        "Thursday",
+        "Tuesday — первоначальный анонс; фактический день Thursday.",
+        "it will actually take place on Thursday",
+      ),
+      gap(
+        "l7",
+        "The workshop will be in room ___.",
+        ["16", "sixteen"],
+        "Номер комнаты — sixteen. Twenty — число мест, а не номер.",
+        "room sixteen, on the first floor",
+        1,
+      ),
+      choice(
+        "l8",
+        "What should students do if a borrowed laptop stops working?",
+        [
+          "Take it to the service desk",
+          "Leave it in the reading area",
+          "Try to repair it themselves",
+        ],
+        "Take it to the service desk",
+        "Нужен возврат сотрудникам; два других действия прямо запрещаются.",
+        "please return it to the service desk",
+      ),
+    ],
+  },
+  {
+    id: "listening-food-study",
+    version: 1,
+    skill: "listening",
+    title: "Reducing food waste",
+    subtitle: "Мини-лекция · цели, данные и выводы",
+    minutes: 8,
+    topic: "Исследования и экология",
+    instructions:
+      "Прочитайте вопросы, затем прослушайте мини-лекцию. В пропусках — не более двух слов и/или число. Следите за противопоставлениями и ограничениями исследования. После проверки будут доступны транскрипт и объяснения.",
+    passage: [],
+    audio: "/audio/food-study.m4a",
+    transcript: `Today I would like to describe a small project on food waste in a university café. The project ran for four weeks in March. Its aim was not to persuade students to buy less food in general. We wanted to find out whether giving customers a choice of portion sizes would reduce the amount left on their plates.
+Before the project began, every hot meal came in one standard size. During the trial, customers could choose either a standard portion or a smaller one. The smaller meal cost one pound less. Staff displayed both options clearly, so students did not have to ask for a special arrangement.
+We collected the food left on plates at the end of each lunchtime and weighed it. We did not include food thrown away in the kitchen while meals were being prepared. This is an important distinction: our figures describe waste from customers, not total waste from the café.
+During the first week, relatively few people chose the smaller meal. After staff put a photograph of the two portions near the entrance, demand for the smaller option increased. Several customers said the picture made the choice easier to understand. This suggests that simply offering an option may not be enough; people also need to notice it.
+Across the trial, the average weight of plate waste per customer fell by eighteen percent compared with the previous month. That sounds encouraging, but we need to be cautious. The menu changed during the trial, and the weather was warmer. Either factor could have influenced what people ate. We cannot say that portion choice alone caused the reduction.
+For a future study, we would like to compare two cafés serving the same menu at the same time. Only one would offer different portion sizes. This would make the evidence stronger. We would also interview kitchen staff, because a change that works for customers may create extra work behind the counter.
+The café has kept the smaller portion as an option. However, the team has not recommended that every café immediately copy the scheme. Our conclusion is that the idea deserves a more carefully controlled test.`,
+    questions: [
+      gap(
+        "f1",
+        "The project lasted ___ in March.",
+        ["four weeks", "4 weeks"],
+        "В начале названа длительность: четыре недели.",
+        "The project ran for four weeks in March",
+      ),
+      choice(
+        "f2",
+        "What was the main aim of the project?",
+        [
+          "To test whether portion choice reduced leftovers",
+          "To persuade students to stop buying hot meals",
+          "To measure all waste produced by the university",
+        ],
+        "To test whether portion choice reduced leftovers",
+        "Цель касается остатков на тарелках при выборе порции.",
+        "whether giving customers a choice of portion sizes would reduce the amount left on their plates",
+      ),
+      gap(
+        "f3",
+        "The smaller meal cost ___ less.",
+        ["one pound", "1 pound", "£1"],
+        "Цена меньше на один фунт, не полная стоимость.",
+        "The smaller meal cost one pound less",
+      ),
+      choice(
+        "f4",
+        "Which waste was excluded from the measurements?",
+        [
+          "Food discarded during kitchen preparation",
+          "Food left on customers’ plates",
+          "Food left after lunchtime meals",
+        ],
+        "Food discarded during kitchen preparation",
+        "Считали только остатки посетителей, не отходы готовки.",
+        "We did not include food thrown away in the kitchen",
+      ),
+      gap(
+        "f5",
+        "Demand increased after staff displayed a ___ of the portions.",
+        ["photograph", "picture"],
+        "У входа повесили фотографию двух порций.",
+        "a photograph of the two portions near the entrance",
+        1,
+      ),
+      gap(
+        "f6",
+        "Average plate waste per customer fell by ___.",
+        ["18 percent", "eighteen percent", "18%"],
+        "Названо eighteen, а не eighty.",
+        "fell by eighteen percent compared with the previous month",
+      ),
+      choice(
+        "f7",
+        "Why should the findings be interpreted cautiously?",
+        [
+          "The menu and weather also changed",
+          "The café stopped serving lunch",
+          "The researchers did not weigh any food",
+        ],
+        "The menu and weather also changed",
+        "Другие изменившиеся факторы мешают выделить влияние порций.",
+        "The menu changed during the trial, and the weather was warmer",
+      ),
+      choice(
+        "f8",
+        "What does the team propose for the next study?",
+        [
+          "Compare two cafés with the same menu",
+          "Remove the smaller option from every café",
+          "Measure only kitchen waste",
+        ],
+        "Compare two cafés with the same menu",
+        "Следующий шаг — более контролируемое сравнение.",
+        "compare two cafés serving the same menu at the same time",
+      ),
+    ],
+  },
+];
