@@ -414,67 +414,33 @@ export default function Trainer() {
     setError("");
   }
   return (
-    <div className="shell">
-      <aside className="sidebar">
-        <a href="/" className="brand">
-          <span className="brand-icon">f.</span>fieldnotes
-          <span className="brand-dot">●</span>
+    <div className="shell quiet-app">
+      <header className="top-navigation">
+        <a href="/" className="quiet-brand">
+          fieldnotes
         </a>
-        <div className="workspace-label">ЛИЧНОЕ ПРОСТРАНСТВО</div>
-        <nav className="space-nav" aria-label="Личное пространство">
+        <nav className="top-links" aria-label="Личное пространство">
           {(
             [
-              ["today", "Сегодня", Sun],
-              ["timeline", "Timeline", Milestone],
-              ["english", "Английский", BookOpen],
+              ["today", "Сегодня"],
+              ["timeline", "Timeline"],
+              ["english", "Английский"],
             ] as const
-          ).map(([id, label, Icon]) => (
+          ).map(([id, label]) => (
             <button
               key={id}
-              className={
-                (id === "english" ? isEnglish : tab === id)
-                  ? "nav-item active"
-                  : "nav-item"
-              }
               onClick={() => navigate(id)}
               aria-current={
                 (id === "english" ? isEnglish : tab === id) ? "page" : undefined
               }
             >
-              <Icon size={20} />
-              <span>{label}</span>
+              {label}
             </button>
           ))}
         </nav>
-        {isEnglish && (
-          <nav className="english-nav" aria-label="Разделы английского">
-            <div className="english-nav-label">АНГЛИЙСКИЙ · B2</div>
-            {tabs.map(([id, label, Icon]) => (
-              <button
-                key={id}
-                className={tab === id ? "nav-item active" : "nav-item"}
-                onClick={() => navigate(id)}
-                aria-current={tab === id ? "page" : undefined}
-              >
-                <Icon size={17} />
-                <span>{label}</span>
-                {id === "review" && due.length > 0 && <b>{due.length}</b>}
-              </button>
-            ))}
-          </nav>
-        )}
-        <div className="sidebar-note">
-          <Leaf size={23} />
-          <p>
-            Понемногу.
-            <br />
-            Каждый день.
-            <br />
-            <strong>В своём темпе.</strong>
-          </p>
-        </div>
         <button
-          className="account"
+          className="quiet-account"
+          aria-label={user ? "Выйти из аккаунта" : "Войти в аккаунт"}
           onClick={() =>
             user
               ? void run(async () => {
@@ -483,47 +449,24 @@ export default function Trainer() {
               : setAuthOpen(true)
           }
         >
-          <span className="avatar">
-            {user?.email?.[0]?.toUpperCase() || "Г"}
-          </span>
-          <span>
-            {user ? "Мой аккаунт" : "Гостевой просмотр"}
-            <small>{user?.email || "Войдите для сохранения"}</small>
-          </span>
-          {user ? <LogOut size={17} /> : <ArrowUpRight size={17} />}
+          {user ? "Выйти" : "Войти"}
         </button>
-      </aside>
+      </header>
+      {isEnglish && (
+        <nav className="english-top-links" aria-label="Разделы английского">
+          {tabs.map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => navigate(id)}
+              aria-current={tab === id ? "page" : undefined}
+            >
+              {label}
+              {id === "review" && due.length > 0 ? ` · ${due.length}` : ""}
+            </button>
+          ))}
+        </nav>
+      )}
       <div className="main-wrap">
-        <header>
-          <span>
-            {isEnglish
-              ? "АНГЛИЙСКИЙ В КОНТЕКСТЕ"
-              : "ВАШЕ ПРОСТРАНСТВО ДЛЯ УЧЁБЫ"}
-          </span>
-          <div className="connection">
-            <i className={user && online ? "connected" : ""} />
-            {!online
-              ? "Нет соединения"
-              : user
-                ? "Облачное сохранение"
-                : db
-                  ? "Вход не выполнен"
-                  : "Гостевой режим"}
-          </div>
-          <button
-            className="mobile-account"
-            aria-label={user ? "Выйти из аккаунта" : "Войти в аккаунт"}
-            onClick={() =>
-              user
-                ? void run(async () => {
-                    assert((await db!.auth.signOut()).error);
-                  })
-                : setAuthOpen(true)
-            }
-          >
-            {user ? <LogOut size={16} /> : <ArrowUpRight size={16} />}
-          </button>
-        </header>
         <main>
           {(!online || error) && (
             <div className="alert" role="alert">
@@ -563,12 +506,7 @@ export default function Trainer() {
               onDirtyChange={setPracticeDirty}
             />
           )}
-          {tab === "today" && (
-            <Today
-              onTimeline={() => navigate("timeline")}
-              onEnglish={() => navigate("english")}
-            />
-          )}
+          {tab === "today" && <Today />}
           {tab === "timeline" && <Timeline />}
           {tab === "english" && (
             <>
@@ -1258,10 +1196,6 @@ export default function Trainer() {
               </section>
             </>
           )}
-          <footer>
-            <span>fieldnotes · Личное пространство для учёбы.</span>
-            <span>Замечать. Понимать. Связывать.</span>
-          </footer>
         </main>
       </div>
       {authOpen && (
