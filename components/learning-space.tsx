@@ -128,3 +128,31 @@ export function Timeline() {
     </section>
   );
 }
+
+export function Literature() {
+  const books = [
+    { title: "Бесы", author: "Фёдор Достоевский", status: "Читаю сейчас" },
+    {
+      title: "Думай медленно… решай быстро",
+      author: "Даниэль Канеман",
+      status: "Читаю сейчас",
+    },
+    { title: "Анна Каренина", author: "Лев Толстой", status: "Читаем зимой" },
+  ];
+  return (
+    <section className="literature-page">
+      <h1>Литература</h1>
+      <ul className="reading-list">
+        {books.map((book) => (
+          <li key={book.title}>
+            <div>
+              <h2>{book.title}</h2>
+              <p>{book.author}</p>
+            </div>
+            <span className="reading-status">{book.status}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}

@@ -34,7 +34,7 @@ import type {
 import CourseLibrary from "./course-library";
 import Practice from "./practice";
 import type { VocabularyItem } from "@/lib/course/types";
-import { Today, Timeline } from "./learning-space";
+import { Today, Timeline, Literature } from "./learning-space";
 const tabs = [
   ["english", "Обзор", Sun],
   ["course", "Правила и лексика", GraduationCap],
@@ -398,7 +398,8 @@ export default function Trainer() {
       e.id !== editId &&
       e.phrase.toLowerCase().trim() === draft.phrase.toLowerCase().trim(),
   );
-  const isEnglish = tab !== "today" && tab !== "timeline";
+  const isEnglish =
+    tab !== "today" && tab !== "timeline" && tab !== "literature";
   function navigate(id: string) {
     if (id === tab) return;
     if (
@@ -416,14 +417,12 @@ export default function Trainer() {
   return (
     <div className="shell quiet-app">
       <header className="top-navigation">
-        <a href="/" className="quiet-brand">
-          fieldnotes
-        </a>
         <nav className="top-links" aria-label="Личное пространство">
           {(
             [
               ["today", "Сегодня"],
               ["timeline", "Timeline"],
+              ["literature", "Литература"],
               ["english", "Английский"],
             ] as const
           ).map(([id, label]) => (
@@ -508,6 +507,7 @@ export default function Trainer() {
           )}
           {tab === "today" && <Today />}
           {tab === "timeline" && <Timeline />}
+          {tab === "literature" && <Literature />}
           {tab === "english" && (
             <>
               <div className="eyebrow">ВАША ЕЖЕДНЕВНАЯ ПРАКТИКА</div>

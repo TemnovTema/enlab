@@ -1891,7 +1891,7 @@ select {
 }
 /* Quiet personal workspace. Focus indicators remain visible for keyboard use. */
 :root {
-  --bg: #fbfaf8;
+  --bg: #f0eee8;
   --ink: #333431;
   --muted: #777971;
   --line: #e4e3de;
@@ -2365,5 +2365,82 @@ body {
   }
   .quiet-app .mobile-jumps a:first-child {
     border: 0;
+  }
+}
+.literature-page > h1 {
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.6px;
+  margin: 0 0 46px;
+}
+.reading-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 740px;
+}
+.reading-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 0 38px;
+}
+.reading-list h2 {
+  font-family: Georgia, serif;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.4px;
+  margin: 0 0 9px;
+}
+.reading-list p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+.reading-status {
+  font-size: 11px;
+  color: #74796b;
+  white-space: nowrap;
+}
+.top-navigation {
+  gap: 32px;
+}
+@media (max-width: 760px) {
+  .top-navigation {
+    padding: 18px 24px;
+    min-height: 100px;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .top-links {
+    order: 0;
+    gap: 8px 23px;
+    flex-wrap: wrap;
+    width: 100%;
+    padding-right: 42px;
+  }
+  .top-links button {
+    font-size: 12px;
+  }
+  .quiet-account {
+    position: absolute;
+    right: 24px;
+    top: 18px;
+    font-size: 11px;
+  }
+  .reading-list li {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 38px;
+  }
+  .reading-list h2 {
+    font-size: 23px;
+  }
+  .literature-page > h1 {
+    font-size: 21px;
+    margin-bottom: 36px;
   }
 }
