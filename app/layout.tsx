@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Fieldnotes · Английский в контексте",
-  description: "Ваши тексты. Ваши выражения. Ежедневная практика.",
+  title: "Fieldnotes · Пространство для учёбы",
+  description: "История, идеи и языки. Личное пространство для учёбы.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Fieldnotes" },
   icons: { icon: "/icon.svg", apple: "/icon-192.png" },

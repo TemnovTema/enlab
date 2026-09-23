@@ -8,7 +8,8 @@ try {
     viewport: { width: 1440, height: 1000 },
   });
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("http://localhost:3000");
+  await page.goto((process.env.BASE_URL || "http://localhost:3000"));
+    await page.getByRole("button", {name:"Английский",exact:true}).click();
   await page
     .getByRole("button", { name: "Правила и лексика", exact: true })
     .first()
@@ -159,7 +160,8 @@ try {
   for (const width of [390, 320]) {
     const mobile = await browser.newPage({ viewport: { width, height: 844 } });
     mobile.on("pageerror", (e) => errors.push(e.message));
-    await mobile.goto("http://localhost:3000");
+    await mobile.goto((process.env.BASE_URL || "http://localhost:3000"));
+    await mobile.getByRole("button", {name:"Английский",exact:true}).click();
     await mobile.getByRole("button", { name: "Тесты", exact: true }).click();
     await mobile
       .getByRole("button", { name: "Начать тест", exact: true })

@@ -19,6 +19,7 @@ import {
   Search,
   GraduationCap,
   ClipboardCheck,
+  Milestone,
 } from "lucide-react";
 import { supabase as db } from "@/lib/supabase";
 import { cloze, csv, dayKey } from "@/lib/domain";
@@ -33,8 +34,9 @@ import type {
 import CourseLibrary from "./course-library";
 import Practice from "./practice";
 import type { VocabularyItem } from "@/lib/course/types";
+import { Today, Timeline } from "./learning-space";
 const tabs = [
-  ["today", "Сегодня", Sun],
+  ["english", "Обзор", Sun],
   ["course", "Правила и лексика", GraduationCap],
   ["tests", "Тесты", ClipboardCheck],
   ["materials", "Материалы", Library],
@@ -396,6 +398,21 @@ export default function Trainer() {
       e.id !== editId &&
       e.phrase.toLowerCase().trim() === draft.phrase.toLowerCase().trim(),
   );
+  const isEnglish = tab !== "today" && tab !== "timeline";
+  function navigate(id: string) {
+    if (id === tab) return;
+    if (
+      practiceDirty &&
+      !confirm(
+        "Ответы или результат текущего теста не сохранены в облаке. Покинуть раздел?",
+      )
+    )
+      return;
+    setTab(id);
+    setReader(null);
+    setNotice("");
+    setError("");
+  }
   return (
     <div className="shell">
       <aside className="sidebar">
@@ -403,33 +420,49 @@ export default function Trainer() {
           <span className="brand-icon">f.</span>fieldnotes
           <span className="brand-dot">●</span>
         </a>
-        <div className="workspace-label">
-          ЛИЧНОЕ ПРОСТРАНСТВО <span>B2</span>
-        </div>
-        <nav>
-          {tabs.map(([id, label, Icon]) => (
+        <div className="workspace-label">ЛИЧНОЕ ПРОСТРАНСТВО</div>
+        <nav className="space-nav" aria-label="Личное пространство">
+          {(
+            [
+              ["today", "Сегодня", Sun],
+              ["timeline", "Timeline", Milestone],
+              ["english", "Английский", BookOpen],
+            ] as const
+          ).map(([id, label, Icon]) => (
             <button
               key={id}
-              className={tab === id ? "nav-item active" : "nav-item"}
-              onClick={() => {
-                if (
-                  id !== tab &&
-                  practiceDirty &&
-                  !confirm(
-                    "Ответы или результат текущего теста не сохранены в облаке. Покинуть раздел?",
-                  )
-                )
-                  return;
-                setTab(id);
-                setReader(null);
-              }}
+              className={
+                (id === "english" ? isEnglish : tab === id)
+                  ? "nav-item active"
+                  : "nav-item"
+              }
+              onClick={() => navigate(id)}
+              aria-current={
+                (id === "english" ? isEnglish : tab === id) ? "page" : undefined
+              }
             >
               <Icon size={20} />
               <span>{label}</span>
-              {id === "review" && due.length > 0 && <b>{due.length}</b>}
             </button>
           ))}
         </nav>
+        {isEnglish && (
+          <nav className="english-nav" aria-label="Разделы английского">
+            <div className="english-nav-label">АНГЛИЙСКИЙ · B2</div>
+            {tabs.map(([id, label, Icon]) => (
+              <button
+                key={id}
+                className={tab === id ? "nav-item active" : "nav-item"}
+                onClick={() => navigate(id)}
+                aria-current={tab === id ? "page" : undefined}
+              >
+                <Icon size={17} />
+                <span>{label}</span>
+                {id === "review" && due.length > 0 && <b>{due.length}</b>}
+              </button>
+            ))}
+          </nav>
+        )}
         <div className="sidebar-note">
           <Leaf size={23} />
           <p>
@@ -462,7 +495,11 @@ export default function Trainer() {
       </aside>
       <div className="main-wrap">
         <header>
-          <span>АНГЛИЙСКИЙ В КОНТЕКСТЕ</span>
+          <span>
+            {isEnglish
+              ? "АНГЛИЙСКИЙ В КОНТЕКСТЕ"
+              : "ВАШЕ ПРОСТРАНСТВО ДЛЯ УЧЁБЫ"}
+          </span>
           <div className="connection">
             <i className={user && online ? "connected" : ""} />
             {!online
@@ -471,7 +508,7 @@ export default function Trainer() {
                 ? "Облачное сохранение"
                 : db
                   ? "Вход не выполнен"
-                  : "Supabase не подключён"}
+                  : "Гостевой режим"}
           </div>
           <button
             className="mobile-account"
@@ -527,6 +564,13 @@ export default function Trainer() {
             />
           )}
           {tab === "today" && (
+            <Today
+              onTimeline={() => navigate("timeline")}
+              onEnglish={() => navigate("english")}
+            />
+          )}
+          {tab === "timeline" && <Timeline />}
+          {tab === "english" && (
             <>
               <div className="eyebrow">ВАША ЕЖЕДНЕВНАЯ ПРАКТИКА</div>
               <div className="heading-row">
@@ -990,7 +1034,7 @@ export default function Trainer() {
                   <button
                     onClick={() => {
                       setQueue(null);
-                      setTab("today");
+                      setTab("english");
                     }}
                   >
                     На главную
@@ -1215,8 +1259,8 @@ export default function Trainer() {
             </>
           )}
           <footer>
-            <span>fieldnotes · Личный английский, каждый день.</span>
-            <span>Читать. Замечать. Запоминать.</span>
+            <span>fieldnotes · Личное пространство для учёбы.</span>
+            <span>Замечать. Понимать. Связывать.</span>
           </footer>
         </main>
       </div>

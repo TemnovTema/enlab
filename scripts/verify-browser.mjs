@@ -7,7 +7,8 @@ try {
   for (const width of [1440, 390]) {
     const page = await browser.newPage({ viewport: { width, height: 1000 } });
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto("http://localhost:3000");
+    await page.goto((process.env.BASE_URL || "http://localhost:3000"));
+    await page.getByRole("button", {name:"Английский",exact:true}).click();
     await page.getByRole("heading", { name: /Маленькие шаги/ }).waitFor();
     assert.equal(
       await page.evaluate(
@@ -87,7 +88,8 @@ try {
   await page.route("**/scan-test.pdf", (route) =>
     route.fulfill({ contentType: "application/pdf", body: pdf("") }),
   );
-  await page.goto("http://localhost:3000");
+  await page.goto((process.env.BASE_URL || "http://localhost:3000"));
+    await page.getByRole("button", {name:"Английский",exact:true}).click();
   const texts = await page.evaluate(async () => {
     const pdfjs = await import("/pdf-test.mjs");
     pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
